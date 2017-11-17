@@ -11,6 +11,17 @@ import GameplayKit
 
 class GameScene: SKScene {
     
+    var gameState: GameState = .new {
+        didSet {
+            switch gameState {
+            case .new:
+                resetGame()
+            case .running:
+                startGame()
+            }
+        }
+    }
+    
     private let kLeftKeyCode    : UInt16 = 123
     private let kRightKeyCode   : UInt16 = 124
     
@@ -19,7 +30,8 @@ class GameScene: SKScene {
     private let kBallNodeName   = "Ball"
     private let kPaddleNodeName = "Paddle"
     private let kBlockNodeName  = "Block"
-    private let kLabelNodeName  = "ScoreLabel"
+    private let kScoreNodeName  = "ScoreLabel"
+    private let kBestNodeName   = "BestLabel"
     
     private let kBallCategory   : UInt32 = 0x1 << 0
     private let kBottomCategory : UInt32 = 0x1 << 1
@@ -30,17 +42,21 @@ class GameScene: SKScene {
     
     private let kBlockWidth: CGFloat        = 100.0
     private let kBlockHeight: CGFloat       = 25.0
-    private let kBlockRecoverTime: Double   = 5.0
     private let kBlockRows                  = 8
     private let kBlockColumns               = 8
+    private var kBlockRecoverTime           = 5.0
     
     fileprivate var paddle: SKSpriteNode!
     fileprivate var ball: SKSpriteNode!
-    
+    fileprivate var bestLabel: SKLabelNode!
     fileprivate var scoreLabel: SKLabelNode!
     fileprivate var currentScore: Int = 0 {
         didSet {
             scoreLabel.text = "\(currentScore)"
+            if currentScore > GameHelper.shared.loadBestScore() {
+                GameHelper.shared.setBestScore(score: currentScore)
+                bestLabel.text = "Best: \(currentScore)"
+            }
         }
     }
     
@@ -51,20 +67,40 @@ class GameScene: SKScene {
         return (paddle?.size.width)! / 2
     }
     
+    private var removedBlocks = Set<SKSpriteNode>()
+    
     var touchBarDelegate: TouchBarViewDelegate?
+    
+    // MARK: - Game Manager
+    
+    private func resetGame() {
+        scoreLabel.text = "Press any key to start"
+        scoreLabel.fontSize = 100.0
+        ball.run(SKAction.move(to: CGPoint(x: 0.0, y: -150.0), duration: 0.0))
+        ball.physicsBody?.velocity = .zero
+        removedBlocks.forEach { self.addChild($0) }
+        removedBlocks.removeAll()
+    }
+    
+    private func startGame(){
+        currentScore = 0
+        scoreLabel.fontSize = 150.0
+        ball.physicsBody!.applyImpulse(CGVector(dx: kBallSpeed, dy: kBallSpeed))
+    }
     
     override func didMove(to view: SKView) {
         // Label
-        scoreLabel = childNode(withName: kLabelNodeName) as! SKLabelNode
+        scoreLabel = childNode(withName: kScoreNodeName) as! SKLabelNode
+        bestLabel = childNode(withName: kBestNodeName) as! SKLabelNode
+        bestLabel.text = "Best: \(GameHelper.shared.loadBestScore())"
         // Border
         let borderBody = SKPhysicsBody(edgeLoopFrom: self.frame)
         borderBody.friction = 0
         self.physicsBody = borderBody
-        physicsWorld.gravity = CGVector(dx: 0.0, dy: 0.0)
+        physicsWorld.gravity = CGVector.zero
         physicsWorld.contactDelegate = self
         // Ball
         ball = childNode(withName: kBallNodeName) as! SKSpriteNode
-        ball.physicsBody!.applyImpulse(CGVector(dx: kBallSpeed, dy: kBallSpeed))
         let trailNode = SKNode()
         trailNode.zPosition = 1
         addChild(trailNode)
@@ -90,7 +126,7 @@ class GameScene: SKScene {
         // Blocks
         let totalBlocksWidth = kBlockWidth * CGFloat(kBlockColumns)
         let xOffset = -totalBlocksWidth / 2
-        let yOffset = frame.height * 0.075
+        let yOffset = frame.height * 0.1
         for i in 0..<kBlockRows {
             for j in 0..<kBlockColumns {
                 let block = SKSpriteNode(color: NSColor.blockColors()[(i + j + 1) % kBlockColumns],
@@ -110,33 +146,43 @@ class GameScene: SKScene {
         }
     }
     
+    // MARK: - Event Handler
+    
     override func keyDown(with event: NSEvent) {
-        switch event.keyCode {
-        case kLeftKeyCode:
-            if (paddle?.position.x)! - halfPaddleWidth > -halfScreenWidth {
-                paddle?.moveLeft()
+        switch gameState {
+        case .new:
+            gameState = .running
+        case .running:
+            switch event.keyCode {
+            case kLeftKeyCode:
+                if (paddle?.position.x)! > -halfScreenWidth + 2 * halfPaddleWidth {
+                    paddle?.moveLeft()
+                }
+            case kRightKeyCode:
+                if (paddle?.position.x)! < halfScreenWidth - 2 * halfPaddleWidth {
+                    paddle?.moveRight()
+                }
+            default:
+                break
             }
-        case kRightKeyCode:
-            if (paddle?.position.x)! + halfPaddleWidth < halfScreenWidth {
-                paddle?.moveRight()
-            }
-        default:
-            break
         }
     }
     
-    func breakBlock(node: SKNode) {
+    private func breakBlock(node: SKNode) {
         let particles = SKEmitterNode(fileNamed: "BrokenPlatform.sks")!
         particles.position = node.position
         particles.zPosition = 3
         addChild(particles)
         particles.run(SKAction.sequence([SKAction.wait(forDuration: 1.0),
                                          SKAction.removeFromParent()]))
-        
         let anotherNode: SKSpriteNode = node as! SKSpriteNode
         node.removeFromParent()
+        removedBlocks.insert(anotherNode)
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + kBlockRecoverTime) {
-            self.addChild(anotherNode)
+            if self.removedBlocks.contains(anotherNode) {
+                self.removedBlocks.remove(anotherNode)
+                self.addChild(anotherNode)
+            }
         }
     }
     
@@ -157,7 +203,7 @@ extension GameScene: SKPhysicsContactDelegate {
         }
         
         if firstBody.categoryBitMask == kBallCategory && secondBody.categoryBitMask == kBottomCategory {
-            currentScore = 0
+            gameState = .new
             return
         }
         

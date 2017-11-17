@@ -35,7 +35,7 @@ class TouchBarView: NSView {
                                               width: kPaddleWidth,
                                               height: kPaddleHeight))
         touchBarPaddle?.wantsLayer = true   // Necessary
-        touchBarPaddle?.layer?.cornerRadius = 5.0
+        touchBarPaddle?.layer?.cornerRadius = 15.0
         touchBarPaddle?.layer?.masksToBounds = true
         touchBarPaddle?.layer?.backgroundColor = NSColor.paddle.cgColor
         

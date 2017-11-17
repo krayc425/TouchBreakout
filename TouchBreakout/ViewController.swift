@@ -31,9 +31,17 @@ class ViewController: NSViewController {
             }
             
             view.ignoresSiblingOrder = true
-//            view.showsFPS = true
-//            view.showsNodeCount = true
         }
+        
+        let restartButton = NSButton(image: #imageLiteral(resourceName: "restart"), target: self, action: #selector(restartGame))
+        restartButton.frame = CGRect(x: 15, y: view.frame.height - 60, width: 45, height: 45)
+        view.addSubview(restartButton)
+    }
+    
+    @objc func restartGame() {
+        gameScene?.gameState = .new
+        
+//        GameHelper.shared.setBestScore(score: 0)
     }
     
     override func makeTouchBar() -> NSTouchBar? {

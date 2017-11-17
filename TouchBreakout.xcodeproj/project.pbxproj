@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		24A4A8A11FBDCB2E00AECE80 /* NSColorExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24A4A8A01FBDCB2E00AECE80 /* NSColorExtensions.swift */; };
+		24A4A8A31FBE973F00AECE80 /* GameState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24A4A8A21FBE973F00AECE80 /* GameState.swift */; };
+		24A4A8A51FBEC09700AECE80 /* GameHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24A4A8A41FBEC09700AECE80 /* GameHelper.swift */; };
 		24C698931FBD7866000B8592 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24C698921FBD7866000B8592 /* AppDelegate.swift */; };
 		24C698951FBD7866000B8592 /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 24C698941FBD7866000B8592 /* GameScene.sks */; };
 		24C698991FBD7866000B8592 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24C698981FBD7866000B8592 /* GameScene.swift */; };
@@ -22,6 +24,8 @@
 
 /* Begin PBXFileReference section */
 		24A4A8A01FBDCB2E00AECE80 /* NSColorExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSColorExtensions.swift; sourceTree = "<group>"; };
+		24A4A8A21FBE973F00AECE80 /* GameState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameState.swift; sourceTree = "<group>"; };
+		24A4A8A41FBEC09700AECE80 /* GameHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameHelper.swift; sourceTree = "<group>"; };
 		24C6988F1FBD7866000B8592 /* TouchBreakout.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TouchBreakout.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		24C698921FBD7866000B8592 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		24C698941FBD7866000B8592 /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
@@ -71,6 +75,8 @@
 				24C698941FBD7866000B8592 /* GameScene.sks */,
 				24CD83471FBDB555005B3BE0 /* BallTrail.sks */,
 				24CD83481FBDB556005B3BE0 /* BrokenPlatform.sks */,
+				24A4A8A21FBE973F00AECE80 /* GameState.swift */,
+				24A4A8A41FBEC09700AECE80 /* GameHelper.swift */,
 				24C698981FBD7866000B8592 /* GameScene.swift */,
 				24C6989A1FBD7866000B8592 /* ViewController.swift */,
 				24CD834B1FBDBDDF005B3BE0 /* TouchBarView.swift */,
@@ -158,10 +164,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				24A4A8A31FBE973F00AECE80 /* GameState.swift in Sources */,
 				24C6989B1FBD7866000B8592 /* ViewController.swift in Sources */,
 				24C698991FBD7866000B8592 /* GameScene.swift in Sources */,
 				24A4A8A11FBDCB2E00AECE80 /* NSColorExtensions.swift in Sources */,
 				24CD83461FBDACE4005B3BE0 /* SKSpriteNodeExtensions.swift in Sources */,
+				24A4A8A51FBEC09700AECE80 /* GameHelper.swift in Sources */,
 				24C698931FBD7866000B8592 /* AppDelegate.swift in Sources */,
 				24CD834C1FBDBDDF005B3BE0 /* TouchBarView.swift in Sources */,
 			);

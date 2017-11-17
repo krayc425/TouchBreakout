@@ -2,7 +2,7 @@
 
 # TouchBreakout
 
-Playing Breakout Game on your Touch Bar, building with `SpriteKit`.
+Play Breakout Game on your Touch Bar, using `SpriteKit`.
 
 # Preview
 

@@ -15,6 +15,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         // Insert code here to initialize your application
+        
+        let mainWindow = NSApplication.shared.windows.first!
+        mainWindow.standardWindowButton(.zoomButton)?.isHidden = true
     }
     
     func applicationWillTerminate(_ aNotification: Notification) {
