@@ -63,7 +63,7 @@ class TouchBarView: NSView {
             let actualTouches = relevantTouches.filter({ $0.type == .direct && $0.identity.isEqual(trackingTouchIdentity) })
             if let trackingTouch = actualTouches.first {
                 let location = trackingTouch.location(in: self)
-                let locationX = Double(location.x)
+                let locationX = Double(location.x) - kPaddleWidth / 2
                 
                 var finalLocationX = 0.0
                 if locationX < 0.0 {
@@ -83,4 +83,25 @@ class TouchBarView: NSView {
         super.touchesMoved(with: event)
     }
     
+    override func touchesEnded(with event: NSEvent) {
+        if let trackingTouchIdentity = trackingTouchIdentity {
+            let relevantTouches = event.touches(matching: .ended, in: self)
+            let actualTouches = relevantTouches.filter({ $0.type == .direct && $0.identity.isEqual(trackingTouchIdentity) })
+            if let _ = actualTouches.first {
+                self.trackingTouchIdentity = nil
+            }
+        }
+        super.touchesEnded(with: event)
+    }
+    
+    override func touchesCancelled(with event: NSEvent) {
+        if let trackingTouchIdentity = trackingTouchIdentity {
+            let relevantTouches = event.touches(matching: .cancelled, in: self)
+            let actualTouches = relevantTouches.filter({ $0.type == .direct && $0.identity.isEqual(trackingTouchIdentity) })
+            if let _ = actualTouches.first {
+                self.trackingTouchIdentity = nil
+            }
+        }
+        super.touchesCancelled(with: event)
+    }
 }

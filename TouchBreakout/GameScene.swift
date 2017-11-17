@@ -44,6 +44,13 @@ class GameScene: SKScene {
         }
     }
     
+    fileprivate var halfScreenWidth: CGFloat {
+        return (scene?.size.width)! / 2
+    }
+    fileprivate var halfPaddleWidth: CGFloat {
+        return (paddle?.size.width)! / 2
+    }
+    
     var touchBarDelegate: TouchBarViewDelegate?
     
     override func didMove(to view: SKView) {
@@ -104,9 +111,6 @@ class GameScene: SKScene {
     }
     
     override func keyDown(with event: NSEvent) {
-        let halfPaddleWidth = (paddle?.size.width)! / 2
-        let halfScreenWidth = (scene?.size.width)! / 2
-        
         switch event.keyCode {
         case kLeftKeyCode:
             if (paddle?.position.x)! - halfPaddleWidth > -halfScreenWidth {
@@ -168,7 +172,13 @@ extension GameScene: SKPhysicsContactDelegate {
 extension GameScene: TouchBarViewDelegate {
     
     func didMoveTo(_ locationX: Double) {
-        let transformedX = CGFloat(locationX) / 600.0 * (scene?.size.width)! - (scene?.size.width)! / 2
+        var transformedX = CGFloat(locationX) / 600.0 * (scene?.size.width)! - (scene?.size.width)! / 2
+        if transformedX - halfPaddleWidth < -halfScreenWidth {
+            transformedX = -halfScreenWidth + halfPaddleWidth
+        }
+        if transformedX + halfPaddleWidth > halfScreenWidth {
+            transformedX = halfScreenWidth - halfPaddleWidth
+        }
         paddle?.moveTo(x: transformedX)
     }
     
