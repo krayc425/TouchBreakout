@@ -38,10 +38,14 @@ class ViewController: NSViewController {
         view.addSubview(restartButton)
     }
     
+    override func viewDidAppear() {
+        super.viewDidAppear()
+        
+        view.window!.styleMask.remove(NSWindow.StyleMask.resizable)
+    }
+    
     @objc func restartGame() {
         gameScene?.gameState = .new
-        
-//        GameHelper.shared.setBestScore(score: 0)
     }
     
     override func makeTouchBar() -> NSTouchBar? {

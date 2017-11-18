@@ -25,8 +25,10 @@ class GameScene: SKScene {
     private let kLeftKeyCode    : UInt16 = 123
     private let kRightKeyCode   : UInt16 = 124
     
-    private let kBasicBallSpeed = 30.0
-    private var kBallSpeed      = 30.0
+    private let kBasicBallSpeed          = 30.0
+    private var kBallSpeed               = 30.0
+    private var kBallRadius: CGFloat     = 12.0
+    
     private let kBallNodeName   = "Ball"
     private let kPaddleNodeName = "Paddle"
     private let kBlockNodeName  = "Block"
@@ -40,11 +42,11 @@ class GameScene: SKScene {
     private let kBorderCategory : UInt32 = 0x1 << 4
     private let kHiddenCategory : UInt32 = 0x1 << 5
     
-    private let kBlockWidth: CGFloat        = 100.0
+    private let kBlockWidth: CGFloat        = 90.0
     private let kBlockHeight: CGFloat       = 25.0
     private let kBlockRows                  = 8
     private let kBlockColumns               = 8
-    private var kBlockRecoverTime           = 5.0
+    private var kBlockRecoverTime           = 10.0
     
     fileprivate var paddle: SKSpriteNode!
     fileprivate var ball: SKSpriteNode!
@@ -94,13 +96,21 @@ class GameScene: SKScene {
         bestLabel = childNode(withName: kBestNodeName) as! SKLabelNode
         bestLabel.text = "Best: \(GameHelper.shared.loadBestScore())"
         // Border
-        let borderBody = SKPhysicsBody(edgeLoopFrom: self.frame)
+        let roundedRectPath = CGPath(roundedRect: self.frame,
+                                     cornerWidth: kBallRadius / 2,
+                                     cornerHeight: kBallRadius / 2,
+                                     transform: nil)
+        let borderBody = SKPhysicsBody(edgeLoopFrom: roundedRectPath)
+        view.frame = roundedRectPath.boundingBoxOfPath
         borderBody.friction = 0
+        borderBody.restitution = 1
+        borderBody.usesPreciseCollisionDetection = true
         self.physicsBody = borderBody
-        physicsWorld.gravity = CGVector.zero
+        physicsWorld.gravity = .zero
         physicsWorld.contactDelegate = self
         // Ball
         ball = childNode(withName: kBallNodeName) as! SKSpriteNode
+        ball.physicsBody?.usesPreciseCollisionDetection = true
         let trailNode = SKNode()
         trailNode.zPosition = 1
         addChild(trailNode)
@@ -108,20 +118,12 @@ class GameScene: SKScene {
         trail.targetNode = trailNode
         ball.addChild(trail)
         // Bottom
-        let bottomRect = CGRect(x: frame.origin.x, y: frame.origin.y, width: frame.size.width, height: 1)
+        let bottomRect = CGRect(x: frame.origin.x, y: frame.origin.y, width: frame.size.width, height: kBallRadius)
         let bottom = SKNode()
         bottom.physicsBody = SKPhysicsBody(edgeLoopFrom: bottomRect)
         addChild(bottom)
         // Paddle
         paddle = childNode(withName: kPaddleNodeName) as! SKSpriteNode
-        
-        // BitMasks
-        bottom.physicsBody!.categoryBitMask = kBottomCategory
-        ball.physicsBody!.categoryBitMask   = kBallCategory
-        paddle.physicsBody!.categoryBitMask = kPaddleCategory
-        borderBody.categoryBitMask          = kBorderCategory
-        
-        ball.physicsBody!.contactTestBitMask = kBottomCategory | kBlockCategory
         
         // Blocks
         let totalBlocksWidth = kBlockWidth * CGFloat(kBlockColumns)
@@ -144,6 +146,13 @@ class GameScene: SKScene {
                 addChild(block)
             }
         }
+        
+        // BitMasks
+        bottom.physicsBody!.categoryBitMask = kBottomCategory
+        ball.physicsBody!.categoryBitMask   = kBallCategory
+        paddle.physicsBody!.categoryBitMask = kPaddleCategory
+        borderBody.categoryBitMask          = kBorderCategory
+        ball.physicsBody!.contactTestBitMask = kBottomCategory | kBlockCategory
     }
     
     // MARK: - Event Handler
@@ -201,6 +210,10 @@ extension GameScene: SKPhysicsContactDelegate {
             firstBody = contact.bodyB
             secondBody = contact.bodyA
         }
+        
+//        if firstBody.categoryBitMask == kBallCategory && secondBody.categoryBitMask == kBorderCategory {
+//            firstBody.applyForce(CGVector(dx: -firstBody.velocity.dx, dy: firstBody.velocity.dy))
+//        }
         
         if firstBody.categoryBitMask == kBallCategory && secondBody.categoryBitMask == kBottomCategory {
             gameState = .new
