@@ -48,10 +48,10 @@ class TouchBarView: NSView {
         if trackingTouchIdentity == nil {
             if let touch = event.touches(matching: .began, in: self).first, touch.type == .direct {
                 trackingTouchIdentity = touch.identity
-                let location = touch.location(in: self)
-                if (touchBarPaddle?.frame.contains(location))! {
-                    print("In Paddle")
-                }
+//                let location = touch.location(in: self)
+//                if (touchBarPaddle?.frame.contains(location))! {
+//                    print("In Paddle")
+//                }
             }
         }
         super.touchesBegan(with: event)

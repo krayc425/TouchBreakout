@@ -16,18 +16,19 @@ class GameScene: SKScene {
             switch gameState {
             case .new:
                 resetGame()
-            case .running:
-                startGame()
+            default:
+                break
             }
         }
     }
     
     private let kLeftKeyCode    : UInt16 = 123
     private let kRightKeyCode   : UInt16 = 124
+    private let kSpaceKeyCode   : UInt16 = 49
     
-    private let kBasicBallSpeed          = 30.0
-    private var kBallSpeed               = 30.0
-    private var kBallRadius: CGFloat     = 12.0
+    private let kBasicBallSpeed           = 30.0
+    private var kBallSpeed                = 30.0
+    private var kBallRadius     : CGFloat = 12.0
     
     private let kBallNodeName   = "Ball"
     private let kPaddleNodeName = "Paddle"
@@ -48,6 +49,9 @@ class GameScene: SKScene {
     private let kBlockColumns               = 8
     private var kBlockRecoverTime           = 10.0
     
+    private var velocityDx: CGFloat = 0.0
+    private var velocityDy: CGFloat = 0.0
+    
     fileprivate var paddle: SKSpriteNode!
     fileprivate var ball: SKSpriteNode!
     fileprivate var bestLabel: SKLabelNode!
@@ -59,6 +63,15 @@ class GameScene: SKScene {
                 GameHelper.shared.setBestScore(score: currentScore)
                 bestLabel.text = "Best: \(currentScore)"
             }
+            
+//            if currentScore > 0 {
+//                velocityDx += 1
+//                velocityDy += 1
+//            }
+            
+//            print(velocityDx, velocityDy)
+            
+//            ball.physicsBody?.velocity = CGVector(dx: velocityDx, dy: velocityDy)
         }
     }
     
@@ -80,6 +93,8 @@ class GameScene: SKScene {
         scoreLabel.fontSize = 100.0
         ball.run(SKAction.move(to: CGPoint(x: 0.0, y: -150.0), duration: 0.0))
         ball.physicsBody?.velocity = .zero
+        velocityDx = CGFloat(kBallSpeed)
+        velocityDy = CGFloat(kBallSpeed)
         removedBlocks.forEach { self.addChild($0) }
         removedBlocks.removeAll()
     }
@@ -90,18 +105,31 @@ class GameScene: SKScene {
         ball.physicsBody!.applyImpulse(CGVector(dx: kBallSpeed, dy: kBallSpeed))
     }
     
+    private func pauseGame() {
+        if gameState == .running {
+            velocityDx = ball.physicsBody?.velocity.dx ?? CGFloat(kBallSpeed)
+            velocityDy = ball.physicsBody?.velocity.dy ?? CGFloat(kBallSpeed)
+            ball.physicsBody?.velocity = .zero
+            gameState = .paused
+        }
+    }
+    
+    private func continueGame() {
+        if gameState == .paused {
+            ball.physicsBody?.velocity = CGVector(dx: velocityDx, dy: velocityDy)
+            gameState = .running
+        }
+    }
+    
     override func didMove(to view: SKView) {
         // Label
         scoreLabel = childNode(withName: kScoreNodeName) as! SKLabelNode
         bestLabel = childNode(withName: kBestNodeName) as! SKLabelNode
         bestLabel.text = "Best: \(GameHelper.shared.loadBestScore())"
         // Border
-        let roundedRectPath = CGPath(roundedRect: self.frame,
-                                     cornerWidth: kBallRadius / 2,
-                                     cornerHeight: kBallRadius / 2,
-                                     transform: nil)
-        let borderBody = SKPhysicsBody(edgeLoopFrom: roundedRectPath)
-        view.frame = roundedRectPath.boundingBoxOfPath
+        let rectPath = CGPath(rect: self.frame, transform: nil)
+        let borderBody = SKPhysicsBody(edgeLoopFrom: rectPath)
+        view.frame = rectPath.boundingBoxOfPath
         borderBody.friction = 0
         borderBody.restitution = 1
         borderBody.usesPreciseCollisionDetection = true
@@ -153,6 +181,12 @@ class GameScene: SKScene {
         paddle.physicsBody!.categoryBitMask = kPaddleCategory
         borderBody.categoryBitMask          = kBorderCategory
         ball.physicsBody!.contactTestBitMask = kBottomCategory | kBlockCategory
+        
+        childNode(withName: "Corners")?.children.forEach {
+            $0.physicsBody?.categoryBitMask = kBorderCategory
+        }
+        
+        resetGame()
     }
     
     // MARK: - Event Handler
@@ -161,6 +195,13 @@ class GameScene: SKScene {
         switch gameState {
         case .new:
             gameState = .running
+            startGame()
+        case .paused:
+            if event.keyCode == kSpaceKeyCode {
+                continueGame()
+            } else {
+                break
+            }
         case .running:
             switch event.keyCode {
             case kLeftKeyCode:
@@ -171,6 +212,8 @@ class GameScene: SKScene {
                 if (paddle?.position.x)! < halfScreenWidth - 2 * halfPaddleWidth {
                     paddle?.moveRight()
                 }
+            case kSpaceKeyCode:
+                pauseGame()
             default:
                 break
             }
@@ -210,10 +253,6 @@ extension GameScene: SKPhysicsContactDelegate {
             firstBody = contact.bodyB
             secondBody = contact.bodyA
         }
-        
-//        if firstBody.categoryBitMask == kBallCategory && secondBody.categoryBitMask == kBorderCategory {
-//            firstBody.applyForce(CGVector(dx: -firstBody.velocity.dx, dy: firstBody.velocity.dy))
-//        }
         
         if firstBody.categoryBitMask == kBallCategory && secondBody.categoryBitMask == kBottomCategory {
             gameState = .new
