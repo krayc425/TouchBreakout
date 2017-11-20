@@ -16,6 +16,9 @@ class GameScene: SKScene {
             switch gameState {
             case .new:
                 resetGame()
+            case .running:
+                blocksNeedToBeDisplayed.forEach { self.addChild($0) }
+                blocksNeedToBeDisplayed.removeAll()
             default:
                 break
             }
@@ -26,8 +29,8 @@ class GameScene: SKScene {
     private let kRightKeyCode   : UInt16 = 124
     private let kSpaceKeyCode   : UInt16 = 49
     
-    private var isLeftPressed = false
-    private var isRightPressed = false
+    private var isLeftPressed   = false
+    private var isRightPressed  = false
     
     private let kBasicBallSpeed           = 30.0
     private var kBallSpeed                = 30.0
@@ -50,10 +53,12 @@ class GameScene: SKScene {
     private let kBlockHeight: CGFloat       = 25.0
     private let kBlockRows                  = 8
     private let kBlockColumns               = 8
-    private var kBlockRecoverTime           = 10.0
+    private var kBlockRecoverTime           = 1.0
     
     private var velocityDx: CGFloat = 0.0
     private var velocityDy: CGFloat = 0.0
+    
+    private var blocksNeedToBeDisplayed: [SKSpriteNode] = []
     
     fileprivate var paddle: SKSpriteNode!
     fileprivate var ball: SKSpriteNode!
@@ -195,13 +200,11 @@ class GameScene: SKScene {
     override func update(_ currentTime: TimeInterval) {
         if gameState == .running {
             if isRightPressed {
-                print("Move right")
-                if (paddle?.position.x)! < halfScreenWidth - 2 * halfPaddleWidth {
+                if (paddle?.position.x)! < halfScreenWidth - halfPaddleWidth {
                     paddle?.moveRight()
                 }
             } else if isLeftPressed {
-                print("Move left")
-                if (paddle?.position.x)! > -halfScreenWidth + 2 * halfPaddleWidth {
+                if (paddle?.position.x)! > -halfScreenWidth + halfPaddleWidth {
                     paddle?.moveLeft()
                 }
             }
@@ -227,7 +230,6 @@ class GameScene: SKScene {
     }
     
     override func keyDown(with event: NSEvent) {
-        print("Key Down \(event.keyCode)")
         switch gameState {
         case .new:
             gameState = .running
@@ -262,11 +264,15 @@ class GameScene: SKScene {
         let anotherNode: SKSpriteNode = node as! SKSpriteNode
         node.removeFromParent()
         removedBlocks.insert(anotherNode)
-        
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + kBlockRecoverTime) {
-            if self.removedBlocks.contains(anotherNode) {
-                self.removedBlocks.remove(anotherNode)
-                self.addChild(anotherNode)
+            if self.gameState == .running {
+                if self.removedBlocks.contains(anotherNode) {
+                    self.removedBlocks.remove(anotherNode)
+                    self.addChild(anotherNode)
+                }
+            } else if self.gameState == .paused {
+                self.blocksNeedToBeDisplayed.append(contentsOf: self.removedBlocks)
+                self.removedBlocks.removeAll()
             }
         }
     }
@@ -302,7 +308,10 @@ extension GameScene: SKPhysicsContactDelegate {
 
 extension GameScene: TouchBarViewDelegate {
     
-    func didMoveTo(_ locationX: Double) {
+    func didMoveTo(_ locationX: Double) -> Bool {
+        guard gameState == .running else {
+            return false
+        }
         var transformedX = CGFloat(locationX) / 600.0 * (scene?.size.width)! - (scene?.size.width)! / 2
         if transformedX - halfPaddleWidth < -halfScreenWidth {
             transformedX = -halfScreenWidth + halfPaddleWidth
@@ -311,6 +320,7 @@ extension GameScene: TouchBarViewDelegate {
             transformedX = halfScreenWidth - halfPaddleWidth
         }
         paddle?.moveTo(x: transformedX)
+        return true
     }
     
 }

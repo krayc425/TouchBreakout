@@ -15,12 +15,12 @@ private let kMoveDuration: TimeInterval = 0.1
 extension SKSpriteNode {
     
     func moveLeft() {
-        let moveAction = SKAction.move(by: CGVector.init(dx: -kMoveDistance, dy: 0), duration: kMoveDuration)
+        let moveAction = SKAction.move(by: CGVector(dx: -kMoveDistance, dy: 0), duration: kMoveDuration)
         self.run(moveAction)
     }
     
     func moveRight() {
-        let moveAction = SKAction.move(by: CGVector.init(dx: kMoveDistance, dy: 0), duration: kMoveDuration)
+        let moveAction = SKAction.move(by: CGVector(dx: kMoveDistance, dy: 0), duration: kMoveDuration)
         self.run(moveAction)
     }
     

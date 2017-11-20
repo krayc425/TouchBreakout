@@ -10,7 +10,7 @@ import Cocoa
 
 protocol TouchBarViewDelegate: class {
     
-    func didMoveTo(_ locationX: Double)
+    func didMoveTo(_ locationX: Double) -> Bool
     
 }
 
@@ -75,11 +75,13 @@ class TouchBarView: NSView {
                 } else {
                     finalLocationX = locationX
                 }
-                touchBarPaddle?.frame = NSRect(x: finalLocationX,
-                                               y: 0,
-                                               width: kPaddleWidth,
-                                               height: kPaddleHeight)
-                self.delegate?.didMoveTo(finalLocationX)
+                if let delegate = self.delegate,
+                    delegate.didMoveTo(finalLocationX) {
+                    touchBarPaddle?.frame = NSRect(x: finalLocationX,
+                                                   y: 0,
+                                                   width: kPaddleWidth,
+                                                   height: kPaddleHeight)
+                }
             }
         }
         super.touchesMoved(with: event)
