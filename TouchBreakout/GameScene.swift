@@ -26,6 +26,9 @@ class GameScene: SKScene {
     private let kRightKeyCode   : UInt16 = 124
     private let kSpaceKeyCode   : UInt16 = 49
     
+    private var isLeftPressed = false
+    private var isRightPressed = false
+    
     private let kBasicBallSpeed           = 30.0
     private var kBallSpeed                = 30.0
     private var kBallRadius     : CGFloat = 12.0
@@ -189,9 +192,42 @@ class GameScene: SKScene {
         resetGame()
     }
     
+    override func update(_ currentTime: TimeInterval) {
+        if gameState == .running {
+            if isRightPressed {
+                print("Move right")
+                if (paddle?.position.x)! < halfScreenWidth - 2 * halfPaddleWidth {
+                    paddle?.moveRight()
+                }
+            } else if isLeftPressed {
+                print("Move left")
+                if (paddle?.position.x)! > -halfScreenWidth + 2 * halfPaddleWidth {
+                    paddle?.moveLeft()
+                }
+            }
+        }
+    }
+    
     // MARK: - Event Handler
     
+    override func keyUp(with event: NSEvent) {
+        switch gameState {
+        case .running:
+            switch event.keyCode {
+            case kLeftKeyCode:
+                isLeftPressed = false
+            case kRightKeyCode:
+                isRightPressed = false
+            default:
+                break
+            }
+        default:
+            break
+        }
+    }
+    
     override func keyDown(with event: NSEvent) {
+        print("Key Down \(event.keyCode)")
         switch gameState {
         case .new:
             gameState = .running
@@ -205,13 +241,9 @@ class GameScene: SKScene {
         case .running:
             switch event.keyCode {
             case kLeftKeyCode:
-                if (paddle?.position.x)! > -halfScreenWidth + 2 * halfPaddleWidth {
-                    paddle?.moveLeft()
-                }
+                isLeftPressed = true
             case kRightKeyCode:
-                if (paddle?.position.x)! < halfScreenWidth - 2 * halfPaddleWidth {
-                    paddle?.moveRight()
-                }
+                isRightPressed = true
             case kSpaceKeyCode:
                 pauseGame()
             default:
@@ -230,6 +262,7 @@ class GameScene: SKScene {
         let anotherNode: SKSpriteNode = node as! SKSpriteNode
         node.removeFromParent()
         removedBlocks.insert(anotherNode)
+        
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + kBlockRecoverTime) {
             if self.removedBlocks.contains(anotherNode) {
                 self.removedBlocks.remove(anotherNode)

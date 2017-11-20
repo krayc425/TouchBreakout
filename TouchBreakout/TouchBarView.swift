@@ -14,6 +14,7 @@ protocol TouchBarViewDelegate: class {
     
 }
 
+@available(OSX 10.12.2, *)
 class TouchBarView: NSView {
 
     private let kPaddleWidth    = 100.0

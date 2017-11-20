@@ -48,6 +48,7 @@ class ViewController: NSViewController {
         gameScene?.gameState = .new
     }
     
+    @available(OSX 10.12.2, *)
     override func makeTouchBar() -> NSTouchBar? {
         let touchBar = NSTouchBar()
         touchBar.delegate = self
@@ -59,6 +60,7 @@ class ViewController: NSViewController {
     
 }
 
+@available(OSX 10.12.2, *)
 extension ViewController: NSTouchBarDelegate {
     
     func touchBar(_ touchBar: NSTouchBar, makeItemForIdentifier identifier: NSTouchBarItem.Identifier) -> NSTouchBarItem? {
@@ -77,10 +79,12 @@ extension ViewController: NSTouchBarDelegate {
     
 }
 
+@available(OSX 10.12.2, *)
 fileprivate extension NSTouchBar.CustomizationIdentifier {
     static let touchBar = NSTouchBar.CustomizationIdentifier.init(rawValue: "com.krayc.touchBreakoutBar")
 }
 
+@available(OSX 10.12.2, *)
 fileprivate extension NSTouchBarItem.Identifier {
     static let touchEvent = NSTouchBarItem.Identifier("com.krayc.touchEvent")
 }

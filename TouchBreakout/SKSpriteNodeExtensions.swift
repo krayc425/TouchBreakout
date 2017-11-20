@@ -9,7 +9,7 @@
 import Foundation
 import SpriteKit
 
-private let kMoveDistance: CGFloat      = 60.0
+private let kMoveDistance: CGFloat      = 15.0
 private let kMoveDuration: TimeInterval = 0.1
 
 extension SKSpriteNode {
