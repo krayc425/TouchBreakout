@@ -16,7 +16,7 @@ protocol TouchBarViewDelegate: class {
 
 @available(OSX 10.12.2, *)
 class TouchBarView: NSView {
-
+    
     private let kPaddleWidth    = 100.0
     private let kPaddleHeight   = 30.0
 
@@ -30,17 +30,18 @@ class TouchBarView: NSView {
     
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
-        
-        touchBarPaddle = NSView(frame: NSRect(x: Double(frame.width / 2) - kPaddleWidth / 2,
-                                              y: 0,
-                                              width: kPaddleWidth,
-                                              height: kPaddleHeight))
-        touchBarPaddle?.wantsLayer = true   // Necessary
-        touchBarPaddle?.layer?.cornerRadius = 15.0
-        touchBarPaddle?.layer?.masksToBounds = true
-        touchBarPaddle?.layer?.backgroundColor = NSColor.paddle.cgColor
-        
-        addSubview(touchBarPaddle!)
+        if touchBarPaddle == nil {
+            touchBarPaddle = NSView(frame: NSRect(x: Double(frame.width / 2) - kPaddleWidth / 2,
+                                                  y: 0,
+                                                  width: kPaddleWidth,
+                                                  height: kPaddleHeight))
+            touchBarPaddle?.wantsLayer = true   // Necessary
+            touchBarPaddle?.layer?.cornerRadius = 15.0
+            touchBarPaddle?.layer?.masksToBounds = true
+            touchBarPaddle?.layer?.backgroundColor = NSColor.paddle.cgColor
+            
+            addSubview(touchBarPaddle!)
+        }
     }
     
     override func touchesBegan(with event: NSEvent) {

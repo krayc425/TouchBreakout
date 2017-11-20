@@ -81,7 +81,7 @@ extension ViewController: NSTouchBarDelegate {
 
 @available(OSX 10.12.2, *)
 fileprivate extension NSTouchBar.CustomizationIdentifier {
-    static let touchBar = NSTouchBar.CustomizationIdentifier.init(rawValue: "com.krayc.touchBreakoutBar")
+    static let touchBar = NSTouchBar.CustomizationIdentifier(rawValue: "com.krayc.touchBreakoutBar")
 }
 
 @available(OSX 10.12.2, *)
