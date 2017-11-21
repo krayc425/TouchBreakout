@@ -48,11 +48,11 @@ class GameScene: SKScene {
     private let kBorderCategory : UInt32 = 0x1 << 4
     private let kHiddenCategory : UInt32 = 0x1 << 5
     
-    private let kBlockWidth: CGFloat        = 90.0
-    private let kBlockHeight: CGFloat       = 25.0
-    private let kBlockRows                  = 8
-    private let kBlockColumns               = 8
-    private var kBlockRecoverTime           = 10.0
+    private let kBlockWidth             : CGFloat = 90.0
+    private let kBlockHeight            : CGFloat = 25.0
+    private let kBlockRows              : Int = 8
+    private let kBlockColumns           : Int = 8
+    private var kBlockRecoverTime = 10.0
     
     private var velocityDx              : CGFloat = 0.0
     private var velocityDy              : CGFloat = 0.0
@@ -63,10 +63,10 @@ class GameScene: SKScene {
     
     private var blocksNeedToBeDisplayed: [SKSpriteNode] = []
     
-    fileprivate var paddle: SKSpriteNode!
-    fileprivate var ball: SKSpriteNode!
-    fileprivate var bestLabel: SKLabelNode!
-    fileprivate var scoreLabel: SKLabelNode!
+    fileprivate var paddle      : SKSpriteNode!
+    fileprivate var ball        : SKSpriteNode!
+    fileprivate var bestLabel   : SKLabelNode!
+    fileprivate var scoreLabel  : SKLabelNode!
     fileprivate var currentScore: Int = 0 {
         didSet {
             scoreLabel.text = "\(currentScore)"
@@ -75,10 +75,10 @@ class GameScene: SKScene {
                 bestLabel.text = "Best: \(currentScore)"
             }
             
-            // increase velocity by score
+            // increase velocity with score
             if currentScore > 0 {
                 let currentVelocity = ball.physicsBody?.velocity.length ?? initialVelocityLength
-                let velocityRatio = 1 + 5 / currentVelocity
+                let velocityRatio: CGFloat = 1.0 + 5.0 / currentVelocity
                 ball.physicsBody?.velocity.extend(by: velocityRatio)
             }
         }
@@ -216,7 +216,11 @@ class GameScene: SKScene {
             if velocityRatio < 1.0 {
                 ball.physicsBody?.velocity.extend(by: 1 / velocityRatio)
             }
-            // TODO: - if on a horizontal level...
+            
+            // if too horizontal...
+            if fabs(Double((ball.physicsBody?.velocity.dy)!)) < 30 {
+                ball.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 2))
+            }
         }
     }
     
@@ -321,6 +325,7 @@ extension GameScene: TouchBarViewDelegate {
         guard gameState == .running else {
             return false
         }
+        // 600.0 is touchbar's width
         var transformedX = CGFloat(locationX) / 600.0 * (scene?.size.width)! - (scene?.size.width)! / 2
         if transformedX - halfPaddleWidth < -halfScreenWidth {
             transformedX = -halfScreenWidth + halfPaddleWidth
