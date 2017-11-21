@@ -4,6 +4,14 @@
 
 Play Breakout Game on your Touch Bar, using `SpriteKit`.
 
+# Download
+
+* [Package](https://github.com/songkuixi/TouchBreakout/releases/download/1.0/TouchBreakout.pkg)
+
+* [Mac App Store](https://itunes.apple.com/cn/app/touchbrickout/id1314804894)
+
+😢The Apple Review teams said the original name **TouchBreakout** leverages the name 'Breakout', so when launching I have to change the name to **TouchBrickout**.
+
 # Preview
 
 ![](https://github.com/songkuixi/TouchBreakout/blob/master/Preview.gif)

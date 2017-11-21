@@ -53,7 +53,7 @@ class GameScene: SKScene {
     private let kBlockHeight: CGFloat       = 25.0
     private let kBlockRows                  = 8
     private let kBlockColumns               = 8
-    private var kBlockRecoverTime           = 1.0
+    private var kBlockRecoverTime           = 10.0
     
     private var velocityDx: CGFloat = 0.0
     private var velocityDy: CGFloat = 0.0
