@@ -104,6 +104,8 @@ class GameScene: SKScene {
         ball.physicsBody?.velocity = .zero
         velocityDx = 0.0
         velocityDy = 0.0
+        isLeftPressed = false
+        isRightPressed = false
         removedBlocks.forEach { self.addChild($0) }
         removedBlocks.removeAll()
     }
@@ -120,6 +122,8 @@ class GameScene: SKScene {
             velocityDx = ball.physicsBody?.velocity.dx ?? 0.0
             velocityDy = ball.physicsBody?.velocity.dy ?? 0.0
             ball.physicsBody?.velocity = .zero
+            isLeftPressed = false
+            isRightPressed = false
             gameState = .paused
         }
     }
@@ -127,6 +131,8 @@ class GameScene: SKScene {
     private func continueGame() {
         if gameState == .paused {
             ball.physicsBody?.velocity = CGVector(dx: velocityDx, dy: velocityDy)
+            isLeftPressed = false
+            isRightPressed = false
             gameState = .running
         }
     }
@@ -218,8 +224,8 @@ class GameScene: SKScene {
             }
             
             // if too horizontal...
-            if fabs(Double((ball.physicsBody?.velocity.dy)!)) < 30 {
-                ball.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 2))
+            if fabs(Double((ball.physicsBody?.velocity.dy)!)) < 20 {
+                ball.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 1))
             }
         }
     }
