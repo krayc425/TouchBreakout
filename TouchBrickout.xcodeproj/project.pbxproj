@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2489D9F41FC3D7760041F3F1 /* CGVectorExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2489D9F31FC3D7760041F3F1 /* CGVectorExtensions.swift */; };
 		24A4A8A11FBDCB2E00AECE80 /* NSColorExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24A4A8A01FBDCB2E00AECE80 /* NSColorExtensions.swift */; };
 		24A4A8A31FBE973F00AECE80 /* GameState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24A4A8A21FBE973F00AECE80 /* GameState.swift */; };
 		24A4A8A51FBEC09700AECE80 /* GameHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24A4A8A41FBEC09700AECE80 /* GameHelper.swift */; };
@@ -23,6 +24,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2489D9F31FC3D7760041F3F1 /* CGVectorExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGVectorExtensions.swift; sourceTree = "<group>"; };
 		24A4A8A01FBDCB2E00AECE80 /* NSColorExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSColorExtensions.swift; sourceTree = "<group>"; };
 		24A4A8A21FBE973F00AECE80 /* GameState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameState.swift; sourceTree = "<group>"; };
 		24A4A8A41FBEC09700AECE80 /* GameHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameHelper.swift; sourceTree = "<group>"; };
@@ -81,6 +83,7 @@
 				24C6989A1FBD7866000B8592 /* ViewController.swift */,
 				24CD834B1FBDBDDF005B3BE0 /* TouchBarView.swift */,
 				24A4A8A01FBDCB2E00AECE80 /* NSColorExtensions.swift */,
+				2489D9F31FC3D7760041F3F1 /* CGVectorExtensions.swift */,
 				24CD83451FBDACE4005B3BE0 /* SKSpriteNodeExtensions.swift */,
 				24C6989C1FBD7866000B8592 /* Assets.xcassets */,
 				24C6989E1FBD7866000B8592 /* Main.storyboard */,
@@ -172,6 +175,7 @@
 				24A4A8A51FBEC09700AECE80 /* GameHelper.swift in Sources */,
 				24C698931FBD7866000B8592 /* AppDelegate.swift in Sources */,
 				24CD834C1FBDBDDF005B3BE0 /* TouchBarView.swift in Sources */,
+				2489D9F41FC3D7760041F3F1 /* CGVectorExtensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

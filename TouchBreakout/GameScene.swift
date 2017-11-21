@@ -32,8 +32,7 @@ class GameScene: SKScene {
     private var isLeftPressed   = false
     private var isRightPressed  = false
     
-    private let kBasicBallSpeed           = 30.0
-    private var kBallSpeed                = 30.0
+    private var kBallImpulse    : CGFloat = 30.0
     private var kBallRadius     : CGFloat = 12.0
     
     private let kBallNodeName   = "Ball"
@@ -55,8 +54,12 @@ class GameScene: SKScene {
     private let kBlockColumns               = 8
     private var kBlockRecoverTime           = 10.0
     
-    private var velocityDx: CGFloat = 0.0
-    private var velocityDy: CGFloat = 0.0
+    private var velocityDx              : CGFloat = 0.0
+    private var velocityDy              : CGFloat = 0.0
+    private var initialVelocityLength   : CGFloat = 0.0
+    private var velocityRatio           : CGFloat {
+        return (ball.physicsBody?.velocity.length)! / initialVelocityLength
+    }
     
     private var blocksNeedToBeDisplayed: [SKSpriteNode] = []
     
@@ -72,14 +75,12 @@ class GameScene: SKScene {
                 bestLabel.text = "Best: \(currentScore)"
             }
             
-//            if currentScore > 0 {
-//                velocityDx += 1
-//                velocityDy += 1
-//            }
-            
-//            print(velocityDx, velocityDy)
-            
-//            ball.physicsBody?.velocity = CGVector(dx: velocityDx, dy: velocityDy)
+            // increase velocity by score
+            if currentScore > 0 {
+                let currentVelocity = ball.physicsBody?.velocity.length ?? initialVelocityLength
+                let velocityRatio = 1 + 5 / currentVelocity
+                ball.physicsBody?.velocity.extend(by: velocityRatio)
+            }
         }
     }
     
@@ -101,8 +102,8 @@ class GameScene: SKScene {
         scoreLabel.fontSize = 100.0
         ball.run(SKAction.move(to: CGPoint(x: 0.0, y: -150.0), duration: 0.0))
         ball.physicsBody?.velocity = .zero
-        velocityDx = CGFloat(kBallSpeed)
-        velocityDy = CGFloat(kBallSpeed)
+        velocityDx = 0.0
+        velocityDy = 0.0
         removedBlocks.forEach { self.addChild($0) }
         removedBlocks.removeAll()
     }
@@ -110,13 +111,14 @@ class GameScene: SKScene {
     private func startGame(){
         currentScore = 0
         scoreLabel.fontSize = 150.0
-        ball.physicsBody!.applyImpulse(CGVector(dx: kBallSpeed, dy: kBallSpeed))
+        ball.physicsBody!.applyImpulse(CGVector(dx: kBallImpulse, dy: kBallImpulse))
+        initialVelocityLength = (ball.physicsBody?.velocity.length)!
     }
     
     private func pauseGame() {
         if gameState == .running {
-            velocityDx = ball.physicsBody?.velocity.dx ?? CGFloat(kBallSpeed)
-            velocityDy = ball.physicsBody?.velocity.dy ?? CGFloat(kBallSpeed)
+            velocityDx = ball.physicsBody?.velocity.dx ?? 0.0
+            velocityDy = ball.physicsBody?.velocity.dy ?? 0.0
             ball.physicsBody?.velocity = .zero
             gameState = .paused
         }
@@ -198,16 +200,23 @@ class GameScene: SKScene {
     }
     
     override func update(_ currentTime: TimeInterval) {
+        // handle keyboard events
         if gameState == .running {
             if isRightPressed {
                 if (paddle?.position.x)! < halfScreenWidth - halfPaddleWidth {
-                    paddle?.moveRight()
+                    paddle?.moveRight(at: velocityRatio)
                 }
             } else if isLeftPressed {
                 if (paddle?.position.x)! > -halfScreenWidth + halfPaddleWidth {
-                    paddle?.moveLeft()
+                    paddle?.moveLeft(at: velocityRatio)
                 }
             }
+            
+            // if too slow...
+            if velocityRatio < 1.0 {
+                ball.physicsBody?.velocity.extend(by: 1 / velocityRatio)
+            }
+            // TODO: - if on a horizontal level...
         }
     }
     
